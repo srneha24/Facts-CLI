@@ -1,10 +1,12 @@
 from textual.screen import Screen
 from textual.widgets import Button, Static
 from textual.containers import VerticalScroll
-from auth import get_local_token, get_user_by_token, logout
+from auth import get_local_token, logout
 from facts import get_facts_by_category
 
+
 class MenuScreen(Screen):
+
     def compose(self):
         username = getattr(self.app, "username", "Guest")
         yield VerticalScroll(
@@ -20,6 +22,8 @@ class MenuScreen(Screen):
 
     def on_button_pressed(self, event):
         btn = event.button.id
+
+        # Logout
         if btn == "logout":
             token = get_local_token()
             logout(token)
@@ -28,23 +32,24 @@ class MenuScreen(Screen):
             self.app.push_screen("login")
             return
 
+        # Add fact
         if btn == "add":
             self.app.push_screen("add_fact")
             return
 
+        # History
         if btn == "history":
-            # show a simple history overlay by opening the show_fact screen with special marker
-            self.app.current_category = "history"
-            # gather facts for all categories and store in app.history
             hist = []
-            for c in ["happy", "sad", "fun"]:
-                rows = get_facts_by_category(c)
-                hist.append(f"--- {c.upper()} ---")
+            for cat in ["happy", "sad", "fun"]:
+                rows = get_facts_by_category(cat)
+                hist.append(f"--- {cat.upper()} ---")
                 hist.extend(rows or ["(no facts)"])
+
+            self.app.current_category = "history"
             self.app.history = hist
             self.app.push_screen("show_fact")
             return
 
-        # show single fact category
+        # Single fact category
         self.app.current_category = btn
         self.app.push_screen("show_fact")

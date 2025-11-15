@@ -8,17 +8,10 @@ from tui import FactsTUI
 from auth import get_local_token, get_user_by_token, logout
 from conf.env import KEYRING_PASSWORD
 
-# --- KEYRING SETUP ---
-# 1. Initialize CryptFileKeyring (must be done without positional arguments).
 app_keyring = CryptFileKeyring()
-# 2. Set the master password using the secret KEYRING_PASSWORD from environment config.
-# IMPORTANT: Use keyring_key directly to avoid triggering the password prompt
 app_keyring.keyring_key = KEYRING_PASSWORD
 keyring.set_keyring(app_keyring)
 
-# 3. CRITICAL: Force the keyring to initialize its file and apply the password
-# by attempting to read a key immediately. This prevents the TUI from
-# popping up the manual password prompt on first run.
 _ = get_local_token()
 
 
