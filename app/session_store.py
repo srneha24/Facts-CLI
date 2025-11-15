@@ -1,4 +1,5 @@
-from auth import get_local_token, get_user_by_token
+from app.auth import get_local_token, get_user_by_token
+
 
 def restore_session():
     token = get_local_token()
@@ -7,4 +8,4 @@ def restore_session():
     user = get_user_by_token(token)
     if not user:
         return None
-    return {"token": token, "username": user.username}
+    return {"token": token, "username": user.username, "user_id": user.id}

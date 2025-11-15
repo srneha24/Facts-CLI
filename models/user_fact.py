@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from db import Base
+from conf.database import Base
 
 
 class UserFact(Base):
@@ -13,5 +13,7 @@ class UserFact(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    user = relationship("User", back_populates="facts")
-    fact = relationship("Fact", back_populates="users")
+    __table_args__ = (UniqueConstraint("user_id", "fact_id", name="uix_user_fact"),)
+
+    user = relationship("User", back_populates="user_facts")
+    fact = relationship("Fact", back_populates="user_facts")

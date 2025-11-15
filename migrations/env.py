@@ -23,7 +23,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Import your models here
-from db import Base  # your SQLAlchemy declarative base
+from conf.database import Base  # your SQLAlchemy declarative base
 from models import User, Fact, SessionToken, UserFact  # Import all models so Alembic can detect them
 
 target_metadata = Base.metadata

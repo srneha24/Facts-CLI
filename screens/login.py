@@ -2,7 +2,8 @@
 from textual.screen import Screen
 from textual.widgets import Button, Input, Static
 from textual.containers import Vertical
-from auth import login, get_local_token, get_user_by_token
+
+from app.auth import login, get_user_by_token
 
 class LoginScreen(Screen):
     def compose(self):
@@ -26,7 +27,9 @@ class LoginScreen(Screen):
             password = self.query_one("#password", Input).value
             token = login(username, password)
             if token:
+                user = get_user_by_token(token)
                 self.app.username = username
+                self.app.user_id = user.id if user else None
                 self.app.push_screen("menu")
             else:
                 self.query_one("#message", Static).update("Login failed — check credentials.")

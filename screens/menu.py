@@ -1,8 +1,9 @@
 from textual.screen import Screen
 from textual.widgets import Button, Static
 from textual.containers import VerticalScroll
-from auth import get_local_token, logout
-from facts import get_facts_by_category
+
+from app.auth import get_local_token, logout
+from screens.show_fact import ShowFactScreen
 
 
 class MenuScreen(Screen):
@@ -13,7 +14,7 @@ class MenuScreen(Screen):
             Static(f"Hello, {username} — Choose an option", id="title"),
             Button("Happy Fact", id="happy"),
             Button("Sad Fact", id="sad"),
-            Button("Fun Fact", id="fun"),
+            Button("Random Fact", id="random"),
             Button("Add Fact", id="add"),
             Button("History", id="history"),
             Button("Logout", id="logout"),
@@ -37,19 +38,5 @@ class MenuScreen(Screen):
             self.app.push_screen("add_fact")
             return
 
-        # History
-        if btn == "history":
-            hist = []
-            for cat in ["happy", "sad", "fun"]:
-                rows = get_facts_by_category(cat)
-                hist.append(f"--- {cat.upper()} ---")
-                hist.extend(rows or ["(no facts)"])
-
-            self.app.current_category = "history"
-            self.app.history = hist
-            self.app.push_screen("show_fact")
-            return
-
-        # Single fact category
         self.app.current_category = btn
-        self.app.push_screen("show_fact")
+        self.app.push_screen(ShowFactScreen())

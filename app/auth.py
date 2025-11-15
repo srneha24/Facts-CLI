@@ -1,8 +1,8 @@
 import uuid
 import keyring
-from passlib.context import CryptContext  # Keep this import
+from passlib.context import CryptContext
 
-from db import SessionLocal
+from conf.database import SessionLocal
 from models import User, SessionToken
 
 pwd_context = CryptContext(
@@ -14,7 +14,7 @@ pwd_context = CryptContext(
     argon2__parallelism=8,
 )
 
-SERVICE_NAME = "factcli"  # keyring service name
+SERVICE_NAME = "factscli"  # keyring service name
 
 
 def signup(username: str, password: str) -> bool:

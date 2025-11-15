@@ -3,7 +3,7 @@ from textual.screen import Screen
 from textual.widgets import Button, Static
 from textual.containers import Vertical, VerticalScroll
 
-from facts import get_fact
+from app.facts import get_fact, add_user_fact, get_user_history
 
 
 class ShowFactScreen(Screen):
@@ -11,11 +11,11 @@ class ShowFactScreen(Screen):
     def compose(self):
         yield Vertical(
             VerticalScroll(Static("", id="fact_text"), id="scroll"),
-            Button("Another", id="another_btn"),
+            Button("Another", id="another_btn", classes="another-btn"),
             Button("Back", id="back_btn"),
         )
 
-    def on_show(self):
+    def on_mount(self):
         widget = self.query_one("#fact_text", Static)
         widget.update("Loading...")
 
@@ -27,18 +27,30 @@ class ShowFactScreen(Screen):
         category = getattr(self.app, "current_category", None)
         widget = self.query_one("#fact_text", Static)
         scroll = self.query_one("#scroll")
+        another_btn = self.query_one("#another_btn", Button)
 
         if not category:
             widget.update("No category selected.")
             return
 
         if category == "history":
-            hist = getattr(self.app, "history", [])
-            widget.update("\n\n".join(hist) if hist else "(no history)")
+            # Hide the "Another" button when viewing history
+            another_btn.display = False
+            history = get_user_history(self.app.user_id)
+            widget.update("\n\n".join(history) if history else "(no history)")
             scroll.scroll_home(animate=False)
             return
 
-        fact = get_fact(category)
+        # Show the "Another" button for regular fact viewing
+        another_btn.display = True
+
+        fact_category = category
+        if category == "random":
+            fact_category = None
+        
+        fact_id, fact = get_fact(category=fact_category, user_id=self.app.user_id)
+        if fact_id:
+            add_user_fact(self.app.user_id, fact_id)
 
         widget.update(f"[{category.upper()}]\n\n{fact}")
         scroll.scroll_home(animate=False)
@@ -57,7 +69,13 @@ class ShowFactScreen(Screen):
 
             category = getattr(self.app, "current_category")
 
-            fact = get_fact(category)
+            fact_category = category
+            if category == "random":
+                fact_category = None
+
+            fact_id, fact = get_fact(category=fact_category, user_id=self.app.user_id)
+            if fact_id:
+                add_user_fact(self.app.user_id, fact_id)
 
             widget.update(f"[{category.upper()}]\n\n{fact}")
             self.query_one("#scroll").scroll_home(animate=False)

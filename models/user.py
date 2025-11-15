@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from db import Base
+from conf.database import Base
 
 
 class User(Base):
@@ -14,4 +14,5 @@ class User(Base):
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     sessions = relationship("SessionToken", back_populates="user")
-    facts = relationship("UserFact", back_populates="user")
+    created_facts = relationship("Fact", back_populates="added_by")
+    user_facts = relationship("UserFact", back_populates="user")

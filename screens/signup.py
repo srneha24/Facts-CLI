@@ -1,7 +1,8 @@
 from textual.screen import Screen
 from textual.widgets import Button, Input, Static
 from textual.containers import Vertical
-from auth import signup
+
+from app.auth import signup
 
 class SignupScreen(Screen):
     def compose(self):
