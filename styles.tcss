@@ -1,0 +1,32 @@
+Screen {
+  background: $panel;
+  color: $text;
+}
+
+#title {
+  content-align: center middle;
+  height: 3;
+  padding: 1 0;
+  text-style: bold;
+}
+
+Static {
+  padding: 1 2;
+}
+
+Input {
+  width: 80%;
+  margin: 0 2;
+  padding: 0 1;
+}
+
+Button {
+  margin: 1 2;
+  padding: 0 2;
+  border: round;
+}
+
+#message {
+  padding-top: 1;
+  height: 2;
+}
