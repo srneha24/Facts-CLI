@@ -1,6 +1,15 @@
 Screen {
-  background: $panel;
+  background: #36184fff;
   color: $text;
+}
+
+Header {
+  background: $primary;
+  color: $text;
+}
+
+Footer {
+  background: $panel;
 }
 
 #title {
@@ -8,6 +17,7 @@ Screen {
   height: 3;
   padding: 1 0;
   text-style: bold;
+  color: $accent;
 }
 
 Static {
@@ -18,15 +28,166 @@ Input {
   width: 80%;
   margin: 0 2;
   padding: 0 1;
+  border: tall $primary;
+}
+
+Input:focus {
+  border: tall $accent;
 }
 
 Button {
   margin: 1 2;
   padding: 0 2;
-  border: round;
+  border: round $primary;
+  background: $primary;
+  color: $text;
+}
+
+Button:hover {
+  background: $accent;
+  border: round $accent;
+}
+
+Button:focus {
+  background: $accent;
+  border: round $accent;
+  text-style: bold;
+}
+
+Button#happy {
+  border: round yellow;
+  background: yellow 30%;
+  color: white;
+  text-style: bold;
+}
+
+Button#happy:hover, Button#happy:focus {
+  background: yellow 50%;
+  border: round yellow;
+  color: white;
+  text-style: bold;
+}
+
+Button#sad {
+  border: round blue;
+  background: blue 30%;
+  color: white;
+  text-style: bold;
+}
+
+Button#sad:hover, Button#sad:focus {
+  background: blue 50%;
+  border: round blue;
+  color: white;
+  text-style: bold;
+}
+
+Button#random {
+  border: round magenta;
+  background: magenta 30%;
+  color: white;
+  text-style: bold;
+}
+
+Button#random:hover, Button#random:focus {
+  background: magenta 50%;
+  border: round magenta;
+  color: white;
+  text-style: bold;
+}
+
+Button#logout {
+  border: round red;
+  background: red 30%;
+  color: white;
+  text-style: bold;
+}
+
+Button#logout:hover, Button#logout:focus {
+  background: red 50%;
+  border: round red;
+  color: white;
+  text-style: bold;
+}
+
+Button#quit {
+  border: round red;
+  background: red 50%;
+  color: white;
+  text-style: bold;
+}
+
+Button#quit:hover, Button#quit:focus {
+  background: red 70%;
+  border: round red;
+  color: white;
+  text-style: bold;
+}
+
+Button#add {
+  color: white;
+  text-style: bold;
+}
+
+Button#add:hover, Button#add:focus {
+  color: white;
+  text-style: bold;
+}
+
+Button#history {
+  color: white;
+  text-style: bold;
+}
+
+Button#history:hover, Button#history:focus {
+  color: white;
+  text-style: bold;
 }
 
 #message {
   padding-top: 1;
   height: 2;
+  color: yellow;
+}
+
+#fact_text {
+  color: cyan;
+  text-style: bold;
+  padding: 2;
+}
+
+.another-btn {
+  background: magenta 30%;
+  border: round magenta;
+}
+
+.another-btn:hover, .another-btn:focus {
+  background: magenta 50%;
+}
+
+#menu-grid {
+  grid-size: 2;
+  grid-gutter: 1 2;
+  padding: 2;
+  width: 100%;
+  height: auto;
+}
+
+#menu-grid Button {
+  width: 100%;
+  min-height: 5;
+  color: white;
+  text-style: bold;
+  content-align: center middle;
+  text-opacity: 100%;
+}
+
+#menu-grid Button:hover {
+  color: white;
+  text-opacity: 100%;
+}
+
+#menu-grid Button:focus {
+  color: white;
+  text-opacity: 100%;
 }
