@@ -139,12 +139,10 @@ uv run python main.py --help
 # Get a random fact by category
 uv run python main.py happy    # Get a happy fact
 uv run python main.py sad      # Get a sad fact
-uv run python main.py fun      # Get a fun fact
 
 # Add a new fact
 uv run python main.py add happy "Your fact text here"
 uv run python main.py add sad "Another fact"
-uv run python main.py add fun "Fun fact!"
 
 # User management
 uv run python main.py whoami   # Show logged-in user
@@ -152,6 +150,9 @@ uv run python main.py signout  # Sign out current user
 
 # Launch the TUI
 uv run python main.py ui
+
+# Launch the sgell
+uv run python main.py shell
 ```
 
 ### TUI (Text User Interface)
