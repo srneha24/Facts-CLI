@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Literal
 
 from conf.database import SessionLocal
 from models import Fact, UserFact
@@ -23,7 +23,40 @@ def add_fact(category: str, fact_text: str, user_id: int) -> bool:
         db.close()
 
 
-def get_facts_by_category(category: str, user_id: int) -> List[Tuple[int, str]]:
+def add_llm_fact(category: Literal["happy", "sad"], fact_text: str) -> int | None:
+    """Add a fact created by the LLM to the database.
+    Args:
+        category (Literal["happy", "sad"]): The category of the fact
+        fact_text (str): The text of the fact
+    Returns:
+        int | None: The ID of the newly created fact, or None if the category is invalid
+    """
+    category = category.lower()
+    if category not in VALID_CATEGORIES:
+        return None
+    db = SessionLocal()
+    try:
+        fact = Fact(
+            category=category, fact=fact_text, user_id=None, is_created_by_llm=True
+        )
+        db.add(fact)
+        db.commit()
+        return fact.id
+    finally:
+        db.close()
+
+
+def get_fact_from_db(
+    category: Literal["happy", "sad"], user_id: int
+) -> Tuple[id, str]:
+    """Retrieve a fact from the database by category (happy, sad), excluding those created by the user.
+
+    Args:
+        category (Literal["happy", "sad"]): The category of fact to retrieve
+        user_id (int): The ID of the user requesting the fact
+    Returns:
+        Tuple[id, str]: A tuple containing the fact ID and the fact text
+    """
     db = SessionLocal()
     try:
         # Exclude facts created by the user
@@ -38,30 +71,28 @@ def get_facts_by_category(category: str, user_id: int) -> List[Tuple[int, str]]:
         seen_fact_ids = set()
         if user_id is not None:
             seen_facts = (
-                db.query(UserFact.fact_id)
-                .filter(UserFact.user_id == user_id)
-                .all()
+                db.query(UserFact.fact_id).filter(UserFact.user_id == user_id).all()
             )
             seen_fact_ids = {f.fact_id for f in seen_facts}
 
         # Filter out already seen facts
         unseen_facts = [f for f in all_facts if f.id not in seen_fact_ids]
 
-        return [(r.id, r.fact) for r in unseen_facts]
+        rows = [(r.id, r.fact) for r in unseen_facts]
+
+        if not rows:
+            return None, f"No {category} facts yet."
+        return random.choice(rows)
     finally:
         db.close()
 
 
-def get_fact(category: str | None, user_id: int) -> Tuple[id, str]:
-    if not category:
-        category = random.choice(VALID_CATEGORIES)
-    rows = get_facts_by_category(category, user_id)
-    if not rows:
-        return None, f"No {category} facts yet."
-    return random.choice(rows)
-
-
 def add_user_fact(user_id: int, fact_id: int):
+    """Record that a user has seen a fact.
+    Args:
+        user_id (int): The ID of the user
+        fact_id (int): The ID of the fact
+    """
     db = SessionLocal()
     try:
         uf = UserFact(user_id=user_id, fact_id=fact_id)

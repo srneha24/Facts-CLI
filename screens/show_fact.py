@@ -3,7 +3,8 @@ from textual.screen import Screen
 from textual.widgets import Button, Static
 from textual.containers import Vertical, VerticalScroll
 
-from app.facts import get_fact, add_user_fact, get_user_history
+from app.facts import get_user_history
+from app.fact_handler import retrieve_fact
 
 
 class ShowFactScreen(Screen):
@@ -48,9 +49,7 @@ class ShowFactScreen(Screen):
         if category == "random":
             fact_category = None
         
-        fact_id, fact = get_fact(category=fact_category, user_id=self.app.user_id)
-        if fact_id:
-            add_user_fact(self.app.user_id, fact_id)
+        fact = retrieve_fact(category=fact_category, user_id=self.app.user_id)
 
         widget.update(f"[{category.upper()}]\n\n{fact}")
         scroll.scroll_home(animate=False)
@@ -73,9 +72,7 @@ class ShowFactScreen(Screen):
             if category == "random":
                 fact_category = None
 
-            fact_id, fact = get_fact(category=fact_category, user_id=self.app.user_id)
-            if fact_id:
-                add_user_fact(self.app.user_id, fact_id)
+            fact = retrieve_fact(category=fact_category, user_id=self.app.user_id)
 
             widget.update(f"[{category.upper()}]\n\n{fact}")
             self.query_one("#scroll").scroll_home(animate=False)
