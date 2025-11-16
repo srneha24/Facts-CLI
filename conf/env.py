@@ -10,4 +10,7 @@ DATABASE_URL = os.environ.get("FACTCLI_DATABASE_URL", DEFAULT_SQLITE)
 
 KEYRING_PASSWORD = os.environ.get("KEYRING_PASSWORD")
 
+# LLM CONFIG
 LLM = os.environ.get("LLM")
+LLM_API_KEY = os.environ.get("LLM_API_KEY")
+LLM_BASE_URL = os.environ.get("LLM_BASE_URL")

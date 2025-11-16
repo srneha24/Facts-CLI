@@ -3,7 +3,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
-from app.facts import add_fact
+from app.facts import add_fact, get_user_history
 from app.fact_handler import retrieve_fact
 from app.auth import get_local_token, get_user_by_token, logout, login, signup
 
@@ -24,12 +24,18 @@ def get_fact(category: str) -> str:
     user = get_user()
     if category == "random":
         category = None
-    return retrieve_fact(category, user.id)
+    return retrieve_fact(category, user.id, show_animation=True)
 
 
 def add_fact_from_user(category: str, fact: str):
     user = get_user()
     return add_fact(category, fact, user.id)
+
+
+def retrieve_history() -> str:
+    user = get_user()
+    history = get_user_history(user_id=user.id)
+    return "\n".join([f"- {hist}" for hist in history]) if history else "No history yet"
 
 
 def interactive_shell():
@@ -118,7 +124,9 @@ def interactive_shell():
                 )
 
             elif cmd == "happy":
-                fact = retrieve_fact(category="happy", user_id=user.id)
+                fact = retrieve_fact(
+                    category="happy", user_id=user.id, show_animation=True
+                )
                 console.print(
                     Panel(
                         fact,
@@ -128,13 +136,17 @@ def interactive_shell():
                 )
 
             elif cmd == "sad":
-                fact = retrieve_fact(category="sad", user_id=user.id)
+                fact = retrieve_fact(
+                    category="sad", user_id=user.id, show_animation=True
+                )
                 console.print(
                     Panel(fact, title="[blue]😢 Sad Fact[/blue]", border_style="blue")
                 )
 
             elif cmd == "random":
-                fact = retrieve_fact(category=None, user_id=user.id)
+                fact = retrieve_fact(
+                    category=None, user_id=user.id, show_animation=True
+                )
                 console.print(
                     Panel(
                         fact,
@@ -152,8 +164,6 @@ def interactive_shell():
                     console.print("[red]✗ Invalid category. Use: happy or sad[/red]")
 
             elif cmd == "history":
-                from app.facts import get_user_history
-
                 history = get_user_history(user.id)
                 if history:
                     console.print("\n[bold cyan]📜 Your History[/bold cyan]")
@@ -170,8 +180,8 @@ def interactive_shell():
                 )
 
         except KeyboardInterrupt:
-            console.print("\n\n[cyan]Goodbye! 👋[/cyan]")
+            console.print("\n\n[cyan]Goodbye![/cyan]")
             break
         except EOFError:
-            console.print("\n[cyan]Goodbye! 👋[/cyan]")
+            console.print("\n[cyan]Goodbye![/cyan]")
             break

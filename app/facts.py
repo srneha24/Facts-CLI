@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple, Literal
+from typing import List, Literal
 
 from conf.database import SessionLocal
 from models import Fact, UserFact
@@ -23,17 +23,24 @@ def add_fact(category: str, fact_text: str, user_id: int) -> bool:
         db.close()
 
 
-def add_llm_fact(category: Literal["happy", "sad"], fact_text: str) -> int | None:
+def add_llm_fact(category: Literal["happy", "sad"], fact_text: str, user_id: int | str) -> dict:
     """Add a fact created by the LLM to the database.
+
     Args:
-        category (Literal["happy", "sad"]): The category of the fact
-        fact_text (str): The text of the fact
+        category: The category of the fact
+        fact_text: The text of the fact
+        user_id: The ID of the user requesting the fact (required for tool binding, can be string or int)
+
     Returns:
-        int | None: The ID of the newly created fact, or None if the category is invalid
+        A dictionary with fact_id and fact_text keys
     """
+    # Convert user_id to int if it's a string (LLM sometimes passes it as string)
+    if isinstance(user_id, str):
+        user_id = int(user_id)
+
     category = category.lower()
     if category not in VALID_CATEGORIES:
-        return None
+        return {"fact_id": -1, "fact_text": f"Invalid category: {category}"}
     db = SessionLocal()
     try:
         fact = Fact(
@@ -41,28 +48,35 @@ def add_llm_fact(category: Literal["happy", "sad"], fact_text: str) -> int | Non
         )
         db.add(fact)
         db.commit()
-        return fact.id
+        db.refresh(fact)
+        return {"fact_id": fact.id, "fact_text": fact.fact}
     finally:
         db.close()
 
 
 def get_fact_from_db(
-    category: Literal["happy", "sad"], user_id: int
-) -> Tuple[id, str]:
+    category: Literal["happy", "sad"], user_id: int | str
+) -> dict:
     """Retrieve a fact from the database by category (happy, sad), excluding those created by the user.
 
     Args:
-        category (Literal["happy", "sad"]): The category of fact to retrieve
-        user_id (int): The ID of the user requesting the fact
+        category: The category of fact to retrieve
+        user_id: The ID of the user requesting the fact (can be string or int)
+
     Returns:
-        Tuple[id, str]: A tuple containing the fact ID and the fact text
+        A dictionary with fact_id and fact_text keys
     """
+    # Convert user_id to int if it's a string (LLM sometimes passes it as string)
+    if isinstance(user_id, str):
+        user_id = int(user_id)
+
     db = SessionLocal()
     try:
         # Exclude facts created by the user
         query = db.query(Fact).filter(Fact.category == category)
         if user_id is not None:
-            query = query.filter(Fact.user_id != user_id)
+            # Exclude facts created by this user, but include LLM-generated facts (user_id is None)
+            query = query.filter((Fact.user_id != user_id) | (Fact.user_id == None))
 
         # Get all facts that match the category
         all_facts = query.all()
@@ -78,20 +92,21 @@ def get_fact_from_db(
         # Filter out already seen facts
         unseen_facts = [f for f in all_facts if f.id not in seen_fact_ids]
 
-        rows = [(r.id, r.fact) for r in unseen_facts]
+        if not unseen_facts:
+            return {"fact_id": -1, "fact_text": f"No {category} facts yet."}
 
-        if not rows:
-            return None, f"No {category} facts yet."
-        return random.choice(rows)
+        chosen_fact = random.choice(unseen_facts)
+        return {"fact_id": chosen_fact.id, "fact_text": chosen_fact.fact}
     finally:
         db.close()
 
 
-def add_user_fact(user_id: int, fact_id: int):
+def add_user_fact(user_id: int, fact_id: int) -> None:
     """Record that a user has seen a fact.
+
     Args:
-        user_id (int): The ID of the user
-        fact_id (int): The ID of the fact
+        user_id: The ID of the user
+        fact_id: The ID of the fact
     """
     db = SessionLocal()
     try:

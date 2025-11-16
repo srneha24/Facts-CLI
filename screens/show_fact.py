@@ -38,7 +38,7 @@ class ShowFactScreen(Screen):
             # Hide the "Another" button when viewing history
             another_btn.display = False
             history = get_user_history(self.app.user_id)
-            widget.update("\n\n".join(history) if history else "(no history)")
+            widget.update("\n\n".join([f"- {hist}" for hist in history]) if history else "(no history)")
             scroll.scroll_home(animate=False)
             return
 

@@ -7,7 +7,13 @@ from tui import FactsTUI
 from conf.database import init_db
 from conf.env import KEYRING_PASSWORD
 from app.auth import get_local_token, logout, signup
-from app.cli import get_fact, get_user, add_fact_from_user, interactive_shell
+from app.cli import (
+    get_fact,
+    get_user,
+    add_fact_from_user,
+    interactive_shell,
+    retrieve_history,
+)
 
 app_keyring = CryptFileKeyring()
 app_keyring.keyring_key = KEYRING_PASSWORD
@@ -73,6 +79,13 @@ def random():
     """Gets a random fact from any category."""
     fact = get_fact(category="random")
     typer.echo(fact)
+
+
+@app.command()
+def history():
+    """Get user's history"""
+    history = retrieve_history()
+    typer.echo(history)
 
 
 @app.command()
