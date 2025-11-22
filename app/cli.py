@@ -11,13 +11,22 @@ from app.auth import get_local_token, get_user_by_token, logout, login, signup
 def get_user():
     token = get_local_token()
     if not token:
-        typer.echo("Not logged in. Please use the TUI to login first.")
+        typer.echo("Not logged in. Please login first.")
         raise typer.Exit()
     user = get_user_by_token(token)
     if not user:
         typer.echo("Session invalid. Please login again.")
         raise typer.Exit()
     return user
+
+
+def login_user(username: str, password: str):
+    token = login(username, password)
+    user = get_user_by_token(token)
+    if not user:
+        typer.echo("Session invalid. Please login again.")
+        raise typer.Exit()
+    return True
 
 
 def get_fact(category: str) -> str:

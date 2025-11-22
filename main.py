@@ -13,6 +13,7 @@ from app.cli import (
     add_fact_from_user,
     interactive_shell,
     retrieve_history,
+    login_user,
 )
 
 app_keyring = CryptFileKeyring()
@@ -50,14 +51,25 @@ def shell():
 
 @app.command()
 def signup(
-    username: str = Option(..., "--category", "-c", help="Fact category"),
-    password: str = Option(..., "--fact", "-f", help="Fact text"),
+    username: str = Option(..., "--category", "-c", help="Username"),
+    password: str = Option(..., "--fact", "-f", help="Password"),
 ):
     """Signs up the user."""
     if signup(username, password):
         typer.echo("Signup successful! You can now login.")
     else:
         typer.echo("Username taken. Try another.")
+
+
+@app.command()
+def login(
+    username: str = Option(..., "--category", "-c", help="Username"),
+    password: str = Option(..., "--fact", "-f", help="Password"),
+):
+    if login_user(username, password):
+        typer.echo(f"Welcome, {username}!")
+    else:
+        typer.echo("Login failed. Please try again.")
 
 
 @app.command()
