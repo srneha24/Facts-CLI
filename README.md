@@ -5,7 +5,7 @@ A modern Python CLI application that stores and retrieves categorized facts with
 ## Features
 
 - **Dual Interface**: Choose between a simple CLI (Typer) or an interactive TUI (Textual)
-- **Categorized Facts**: Organize facts into happy, sad, and fun categories
+- **Categorized Facts**: Organize facts into happy and sad categories
 - **User Authentication**: Secure signup/login with Argon2 password hashing
 - **Persistent Sessions**: Encrypted session storage using keyring
 - **Database Flexibility**: SQLite for development, PostgreSQL for production
