@@ -135,3 +135,6 @@ coverage_html_report/
 # LLM
 CLAUDE.md
 .claude/*
+
+# Langgraph Studio
+.langgraph_api
